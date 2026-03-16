@@ -1,0 +1,4 @@
+[submodule "thirdparty/multi-hmr"]
+	path = thirdparty/multi-hmr
+	url = http://gitlab.alibaba-inc.com/dadong.gxd/multi-hmr.git
+	branch = smplify

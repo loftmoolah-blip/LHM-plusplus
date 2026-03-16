@@ -1,0 +1,81 @@
+# Ignore Python cache files
+**/__pycache__
+
+# Ignore compiled Python files
+*.pyc
+*.egg
+*.whl
+
+# Ignore editor-specific files
+.vscode/
+.idea/
+
+# Ignore operating system files
+.DS_Store
+Thumbs.db
+
+# Ignore log files
+*.log
+
+# Ignore temporary and cache files
+*.tmp
+*.cache
+.cache/
+
+# Ignore build artifacts
+/build/
+/dist/
+
+# Ignore virtual environment files
+/venv/
+/.venv/
+
+# Ignore package manager files
+/node_modules/
+/yarn.lock
+/package-lock.json
+
+# Ignore database files
+*.db
+*.sqlite
+
+# Ignore secret files
+*.secret
+
+# Ignore compiled binaries
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Ignore backup files
+*.bak
+*.swp
+*.swo
+*.~*
+
+# User Setting
+debug/
+debug/app_test/
+example_data/
+exps/
+exps
+gfpgan/
+thirdparty/
+train_data/
+pretrained_models/
+benchmark/
+motion_video/
+
+debug_vis/
+pretrained_models
+train_data
+gfpgan
+
+# Ignore pointops build artifacts
+lib/pointops/build/
+lib/pointops/dist/
+
+# Ignore additional third-party libs
+lib/diff-gaussian-rasterization/
+lib/simple-knn/
