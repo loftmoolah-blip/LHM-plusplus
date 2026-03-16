@@ -1,0 +1,299 @@
+# Single-view version, Like LHM
+experiment:
+  type: lrm
+  seed: 42
+  parent: LHM-A4O-SMPLX-Train-806
+  child: LHM-A4O-SMPLX-Train-View1-randombg-colors-encoder-decoder-opacity-loss
+model:
+  model_name: LHMA4O
+  encoder_type: dinov2
+  encoder_model_name: dinov2_vitl14_reg
+  encoder_feat_dim: 1024
+  encoder_freeze: false
+  latent_query_points_type: e2e_points
+  pcl_dim: 1024
+  use_face_id: true
+  facesr: true
+  transformer_decoder:
+    type: patch_pvt_mm_encoder_decoder
+    point_backbone:
+      in_channels: 6
+      order:
+      - z
+      - z-trans
+      - hilbert
+      - hilbert-trans
+      stride:
+      - 1
+      - 2
+      - 2
+      enc_depths:
+      - 4
+      - 4
+      - 4
+      - 4
+      enc_channels:
+      - 64
+      - 128
+      - 256
+      - 512
+      enc_num_head:
+      - 4
+      - 8
+      - 16
+      - 16
+      enc_patch_size:
+      - 4096
+      - 4096
+      - 2048
+      - 1024
+      dec_depths:
+      - 4
+      - 4
+      - 4
+      dec_channels:
+      - 128
+      - 256
+      - 512
+      dec_num_head:
+      - 16
+      - 16
+      - 16
+      dec_patch_size:
+      - 4096
+      - 4096
+      - 2048
+      mlp_ratio: 4
+      qkv_bias: true
+      qk_scale: null
+      attn_drop: 0.0
+      proj_drop: 0.0
+      drop_path: 0.0
+      shuffle_orders: false
+      pre_norm: true
+      enable_rpe: false
+      enable_flash: true
+      upcast_attention: false
+      upcast_softmax: false
+      traceable: true
+      mask_token: false
+      enc_mode: false
+      freeze_encoder: false
+      decoder_concat_stop_feat: 2
+    image_backbone:
+      depth: 3
+      aa_order:
+      - frame
+  transformer_type: mm
+  transformer_heads: 16
+  transformer_dim: ${model.pcl_dim}
+  transformer_layers: 1
+  tf_grad_ckpt: tru
+  encoder_grad_ckpt: true
+  human_model_path: ./pretrained_models/human_model_files
+  smplx_subdivide_num: 1
+  smplx_type: smplx_diffused_voxel
+  gs_query_dim: 128
+  gs_use_rgb: true
+  gs_sh: 3
+  dense_sample_pts: 160000
+  render_features: true
+  gs_rendering: gsplat
+  deform_head_type: attn
+  gs_mlp_network_config:
+    n_neurons: 512
+    n_hidden_layers: 2
+    activation: silu
+  gs_xyz_offset_max_step: 1.0
+  gs_clip_scaling:
+  - 100
+  - 0.01
+  - 0.05
+  - 3000
+  expr_param_dim: 100
+  shape_param_dim: 10
+  fix_opacity: false
+  fix_rotation: false
+  cano_pose_type: 1
+dataset:
+  subsets:
+  - name: video_human_lhm_a4o_tar
+    root_dirs: /mnt/workspaces/dataset/video_human_datasets/LHM_video_dataset/
+    meta_path:
+      train: /mnt/workspaces/dataset/video_human_datasets/clean_labels/valid_LHM_dataset_train_filter_16W.json
+      val: ./train_data/ClothVideo/label/valid_LHM_dataset_train_val_100.json
+    sample_rate: 1.0
+    random_sample_ratio: 1.0
+    use_flame: true
+    processing_pipeline:
+    - name: PadRatioWithScale
+      target_ratio: 5/3
+      tgt_max_size_list:
+      - 840
+      val: true
+    - name: UpRandomCrop
+      low: 0.6
+      high: 1.1
+      val: true
+    - name: ToTensor
+      val: true
+    src_head_size: 112
+    ref_img_size: 1
+    womask: true
+  - name: video_human_a4o_tar
+    root_dirs: /mnt/workspaces/dataset/video_human_datasets/selected_dataset_v5_tar/
+    meta_path:
+      train: /mnt/workspaces/dataset/video_human_datasets/clean_labels/valid_selected_datasetv5_train_filter40K.json
+      val: /mnt/workspaces/dataset/video_human_datasets/clean_labels/valid_selected_datasetv5_val_filter460-self-rotated-69.json
+    sample_rate: 1.0
+    random_sample_ratio: 1.0
+    use_flame: true
+    processing_pipeline:
+    - name: PadRatioWithScale
+      target_ratio: 5/3
+      tgt_max_size_list:
+      - 840
+      val: true
+    - name: UpRandomCrop
+      low: 0.6
+      high: 1.1
+      val: true
+    - name: ToTensor
+      val: true
+    src_head_size: 112
+    ref_img_size: 1
+    womask: true
+  - name: video_human_a4o_tar
+    root_dirs: /mnt/workspaces/dataset/video_human_datasets/selected_dataset_v6_tar/
+    meta_path:
+      train: /mnt/workspaces/dataset/video_human_datasets/clean_labels/valid_selected_datasetv6_train_5W.json
+      val: /mnt/workspaces/dataset/video_human_datasets/clean_labels/valid_selected_datasetv6_test_100-self-rotated-25.json
+    sample_rate: 1.0
+    random_sample_ratio: 1.0
+    use_flame: true
+    processing_pipeline:
+    - name: PadRatioWithScale
+      target_ratio: 5/3
+      tgt_max_size_list:
+      - 840
+      val: true
+    - name: UpRandomCrop
+      low: 0.6
+      high: 1.1
+      val: true
+    - name: ToTensor
+      val: true
+    src_head_size: 112
+    ref_img_size: 1
+    womask: true
+  - name: video_human_a4o_tar
+    root_dirs: /mnt/workspaces/dataset/video_human_datasets/synthetic_data_tar/
+    meta_path:
+      train: /mnt/workspaces/dataset/video_human_datasets/clean_labels/valid_LHM_synthetic_dataset_train_3700.json
+      val: /mnt/workspaces/dataset/video_human_datasets/clean_labels/valid_LHM_synthetic_dataset_val_60.json
+    sample_rate: 1.0
+    random_sample_ratio: 1.0
+    use_flame: true
+    processing_pipeline:
+    - name: PadRatioWithScale
+      target_ratio: 5/3
+      tgt_max_size_list:
+      - 840
+      val: true
+    - name: UpRandomCrop
+      low: 0.6
+      high: 1.1
+      val: true
+    - name: ToTensor
+      val: true
+    src_head_size: 112
+    ref_img_size: 1
+    womask: true
+  sample_side_views: 5
+  source_image_res: 512
+  render_image:
+    low: 384
+    high: 384
+    region: null
+  num_train_workers: 4
+  multiply: 16
+  num_val_workers: 2
+  pin_mem: true
+  repeat_num: 4
+train:
+  mixed_precision: bf16
+  find_unused_parameters: false
+  loss_func:
+    pixel_loss: l1
+    ball_loss:
+      type: heuristic
+      group:
+        head: 1.0
+        lower_body: 100.0
+        upper_body: 1000.0
+        hands: 10000.0
+        constrain_body: 1000.0
+    offset_loss:
+      type: heuristic
+      group:
+        head: 1.0
+        lower_body: 1.0
+        upper_body: 1.0
+        hands: 1000.0
+    opacity_loss:
+      type: heuristic
+      group:
+        lower_body: 1.0
+  loss:
+    pixel_weight: 0.0
+    masked_pixel_weight: 1.0
+    masked_head_weight: 0.0
+    perceptual_weight: 1.0
+    tv_weight: -1
+    mask_weight: 1.0
+    mask_pixel_weight: 1.0
+    deform_mask_weight: 0.0
+    face_id_weight: 0:0.01:0.05:3000
+    asap_weight: 10.0
+    acap_weight: 1000.0
+    opacity_weight: 0.001
+  optim:
+    lr: 0.0001
+    weight_decay: 0.0005
+    beta1: 0.9
+    beta2: 0.95
+    clip_grad_norm: 0.1
+  scheduler:
+    type: cosine
+    warmup_real_iters: 1000
+  batch_size: 4
+  accum_steps: 1
+  epochs: 10
+  debug_global_steps: null
+  human_lrm: null
+  human_lrm_a4o: null
+val:
+  batch_size: 4
+  global_step_period: 1000
+  debug_batches: 10
+saver:
+  auto_resume: true
+  load_model: null
+  checkpoint_root: ./exps/checkpoints
+  checkpoint_global_steps: 1000
+  checkpoint_keep_level: 100
+logger:
+  stream_level: WARNING
+  log_level: INFO
+  log_root: ./exps/logs
+  tracker_root: ./exps/trackers
+  enable_profiler: false
+  trackers:
+  - tensorboard
+  image_monitor:
+    train_global_steps: 200
+    samples_per_log: 4
+compile:
+  suppress_errors: true
+  print_specializations: true
+  disable: true
