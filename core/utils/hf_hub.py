@@ -19,8 +19,27 @@
 # @Time          : 2025-08-31 10:02:15
 # @Function      : HuggingFace hub model wrapper
 
+import numpy as np
 import torch.nn as nn
 from huggingface_hub import PyTorchModelHubMixin
+
+
+def _ensure_numpy_legacy_aliases() -> None:
+    legacy_aliases = {
+        "bool": np.bool_,
+        "int": np.int_,
+        "float": np.float64,
+        "complex": np.complex128,
+        "object": np.object_,
+        "unicode": np.str_,
+        "str": np.str_,
+    }
+    for name, value in legacy_aliases.items():
+        if name not in np.__dict__:
+            setattr(np, name, value)
+
+
+_ensure_numpy_legacy_aliases()
 
 
 def wrap_model_hub(model_cls: nn.Module):
